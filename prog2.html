@@ -1,0 +1,543 @@
+<!-- CMPS 161: Programming Assignment 2 -->
+<!-- Coded by Adam Filiz, afiliz@ucsc.edu -->
+<!-- Base D3 code from http://bl.ocks.org/threestory/ed0f322d7bb2e3be8ded -->
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Prog 2</title>
+
+		<script type="text/javascript" src="js/d3.v3.min.js"></script>
+		<script type="text/javascript" src="js/jquery-3.3.1.js"></script>
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+ 	
+		<style type="text/css">
+			
+			body {
+				margin: 0;
+				background-color: rgb(36, 36, 36);
+				font-family: "proxima-nova", "Source Sans Pro", sans-serif;
+			}
+
+			@media (min-width: 1200px) {
+				.container{
+					max-width: 1300px;
+				}
+			}
+
+			#container {
+				width: 800px;
+				margin-left: 30px;
+				margin-right: auto;
+				margin-top: 30px;
+				padding: 30px;
+				padding-right: 90px;
+				background-color: white;
+				box-shadow: 3px 3px 7px #222;
+			}
+
+			#info {
+				margin-left: 15px;
+				margin-right: auto;
+				margin-top: 30px;
+				padding: 30px;
+				padding-right: 120px;
+				background-color: white;
+				box-shadow: 3px 3px 7px #222;
+			}
+
+			#map-info {
+				margin-left: 15px;
+				margin-right: auto;
+				margin-top: 30px;
+				padding: 30px;
+				padding-right: 120px;
+				background-color: white;
+				box-shadow: 3px 3px 7px #222;
+			}
+
+			#map-select {
+				background-color: white;
+				margin-top: 30px;
+				margin-left: 20px;
+				margin-bottom: 400px;
+			}
+
+			#selections {
+				margin-top: 30px;
+			}
+			
+			h1 {
+				font-size: 24px;
+				margin: 0;
+			}
+
+			p {
+				font-size: 16px;
+				margin: 15px 0 10px 0;
+			}
+
+			a {
+			  color: #799DCB;
+			  text-decoration: none;
+			  transition: color .3s, background .3s, border .3s;
+			}
+			a:hover {
+			  color: #48494b;
+			  background: #e7e8e9;
+			}
+
+			svg {
+				background-color: white;
+				padding-left: 20px;
+				/* margin-bottom: -20px; */
+			}
+
+			#container_bar {
+				width: 800px;
+				margin-left: 30px;
+				padding-right: 120px;
+				
+				margin-top: 40px;
+				/* padding: 30px; */
+				background-color: white;
+				box-shadow: 3px 3px 7px #222;
+			}
+
+			text[y = 3]{
+				font-size: 6px;
+			}
+
+			#x-axis {
+				font-size: 11px;
+			}
+			
+			path {
+				/* fill: #799dcb; */
+				stroke: #fff;
+				}
+			path:hover {
+				fill:#48494b;
+				cursor:pointer;
+			}
+
+			#tooltip {
+				width: 150px;
+				height: auto;
+				padding: 5px;
+				background-color: #fff;
+				color: #000;
+				-webkit-border-radius: 5px;
+				-moz-border-radius: 5px;
+				border-radius: 5px;
+				-webkit-box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.4);
+				-moz-box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.4);
+				box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.4);
+				pointer-events: none;
+				position: absolute;
+			}
+				
+			#tooltip.hidden {
+				display: none;
+			}
+			
+			#tooltip p {
+				margin: 0;
+				font-size: 14px;
+				line-height: 18px;
+			}
+
+		</style>
+	</head>
+	
+    
+  <body>
+		<div class="container">
+			<div class="row-fluid" id="info">
+				<h5 style="font-size: 32px">
+					<b>Have Trump Counties Historically Voted Against Education Funding in California?</b>
+				</h5>
+				<p>This data visualization aims to answer the above question. Below you will find a county map of California and a grouped bar chart of trump counties' vote percentages on education funding propositions.</p>
+				<p>The propositions used are as follows:<br>
+					<br>Proposition 51 (2016): K-12 and Community College Facilities<br>
+					Proposition 30 (2012): Temporary Taxes to Fund Education<br>
+					Prop 1D (2006): Public Education Facilities Bond 2006
+					<br>
+				</p>
+				<p>Note: A "Trump County" is a California county whose majority population voted for Donald Trump.</p>
+<br>
+				<p>Code documentation is included in prog2.html and group-bar.js.</p>
+			</div>
+			<div class="row">
+				<div id="container" class="col">
+					<h1>California County Map</h1>
+					<br>
+				</div>
+				<div id="map-select" class="col">
+					<div id="selections">
+						<label><input type="radio" name="opt" value="1" name="my-radio" checked> Prop 51, 2016</label><br>
+						<label><input type="radio" name="opt" value="2" name="my-radio"> Prop 30, 2012</label><br>
+						<label><input type="radio" name="opt" value="3" name="my-radio"> Prop 1D, 2006</label><br>
+						<br>
+						<label><input type="radio" name="opt" value="4" name="my-radio"> Trump Vote Percentage Per County</label><br>
+						<label><input type="radio" name="opt" value="5" name="my-radio"> Majority Vote (Red = Trump)</label><br>
+						<br>
+						<input type="checkbox" name="show-trump"> Show only Trump counties*<br>
+					</div>
+				</div>
+			</div>
+			<div class="row-fluid" id="map-info">
+					<h1>County Map</h2>
+						<p>
+			
+							The county map shows the data from 3 proposition (prop 51, prop 30, and prop 1D) in which Californians voted to increase funding for education (whether that be for K-12 education, community colleges, or public universities).
+		
+						</p>
+						<br>
+						<h1>
+							County Map Colors
+						</h1>
+						<p>
+								The data bounds are as follows:
+								<br>Prop 51: 31% (Modoc) to 66.8% (San Francisco)
+								<br>Prop 30: 30.6% (Modoc) to 77.2% (San Francisco)
+								<br>Prop 1D: 37.9% (Glenn) to 72.9% (San Francisco)
+								<br>Trump Vote Percentage Per County: 9.3% (San Francisco) to 72% (Lassen)
+								<br><br>
+								The colors represent the following:
+								<br><br>
+								Propositions (all of which voting "yes" on): 
+								<br>Red: Smallest Percentage Val
+								<br>White: 50%
+								<br>Blue: Highest Percentage Val
+								<br><br>
+								Trump Vote Percentage Per County: 
+								<br>Black: Highest Percentage Val
+								<br> Light Grey: Lowest Percentage Val
+								<br><br>
+								Trump Vote Percentage Per County: 
+								<br>Red: County Voted Trump
+								<br> White: County Voted Clinton
+								<br><br>
+								Note: Other groups other than Trump and Clinton were involved in the vote percentage. However, since Clinton's vote percentages across all counties beat the other candidates' vote percentages combined, the visualization here represents Trump vs Clinton.
+								<br><br><br>
+							For all datasets used in the county map, the darkest sections of the county map represent the value bounds for that dataset.
+							<br><br>
+							For example, for Prop 51, the highest percent value was 66.8% and the lowest was 31.5%. So the darkest shade of blue represents 66.8% and the darkest shade of red represents 31.5%.
+							
+						</p>
+			</div>
+			
+			<div class="row">
+				<div id="container_bar" class="col">
+						<br>
+						<h1>Trump Counties Voting "Yes" on Education Funding Propositions</h1>
+						<br>
+				</div>
+			</div>
+			<div class="row-fluid" id="info">
+					<p>The above grouped bar chart shows the Trump counties vote percentage results from each proposition vote. The dotted line shows where 50% is on the y axis. 
+						<br><br>If a bar goes over the dotted line, it means that county voted yes on that proposition.</p>
+					<p>As you can see, the only bars in which that is true are:</p>
+					<p>
+						Butte: Proposition 51
+						<br>
+						Kern: Proposition 51
+						<br>
+						Kern: Proposition 1D
+						<br>
+						Kings: Proposition 51
+						<br>
+						Tulare: Proposition 51
+					</p>
+					<p>
+						For proposition 30, none of the Trump counties voted yes.
+					</p>
+				</div>
+		</div>
+		<div id="tooltip" class="hidden">
+            <p>County: <span id="county">County Name</span></p>
+            <p>Vote Percent:  <span id="vote">Vote Number</span></p>
+				</div>
+		<script src="group-bar.js"></script>
+		<script type="text/javascript">
+
+			// keeps track of the currently used colorFn
+			var currentColorFn = 0; // 0 for blueRed, 1 for trumpPercent, 2 for trumpYesNo
+			// county map setup, stores the current dataset used
+			var currentDataset = "prop-51-2016.csv";
+			// tracks whether to draw only trump counties or not
+			var onlyTCounties = false;
+
+			// initial data bounds for color funcitons
+			var high = 100;
+			var low = 0;
+			var mid = 50;
+
+			// d3 color functions for map
+			var blueRed = d3.scale.linear()
+                .domain([low, 50, high])
+                .range(['#cc0a0a', '#ffffff', '#0074d3'])
+                .interpolate(d3.interpolateRgb); //interpolateHsl interpolateHcl interpolateRgb
+
+			var trumpPercent = d3.scale.linear()
+				.domain([low, high])
+				.range(['#cccccc', '#000000'])
+				.interpolate(d3.interpolateRgb);
+			
+			var trumpYesNo = d3.scale.linear()
+				.domain([0, 100])
+				.range(['#0074d3', '#cc0a0a'])
+				.interpolate(d3.interpolateRgb);
+			// radio button jquery changing
+			// based on https://jsfiddle.net/h6ye7/2/
+
+			// loads in data from json, selected dataset, and the majority trump county dataset
+			// then draws the map based on the selected dataset
+			function draw(dataset, curColorFn){
+				d3.json("california-counties.json", function(json) { // load geojson data
+						d3.csv(dataset, function(csv){ // load csv data
+							d3.csv("trump-majority-vote-2016.csv", function(t){ // load trump majority vote csv data
+								// loop through each county percent value in the csv file
+								// and load into the json file
+								for (var i = 0; i < csv.length; i++) {
+									// get county name from csv
+									var dataCountyName = csv[i].name;
+									// get trump county name from majority vote csv
+									var trumpCountyName = t[i].name;
+									// get trump county percentage from majority vote csv
+									var tDataCountyPercent = t[i].yes;
+									// get county percentage from csv
+									var dataCountyPercent = csv[i].yes;
+
+									// find the corresponding county inside the GeoJSON
+									for (var j = 0; j < json.features.length; j++)  {
+										var jsonCountyName = json.features[j].properties.name;
+
+										if (dataCountyName == jsonCountyName) {
+											// copy the data value into the JSON
+											json.features[j].properties.percent = stringPercentToNum(dataCountyPercent); 
+
+											if(i == 0){
+												high = json.features[0].properties.percent;
+												low = json.features[0].properties.percent
+											}
+
+											if(json.features[j].properties.percent > high) high = json.features[j].properties.percent;
+											if(json.features[j].properties.percent < low) low = json.features[j].properties.percent;
+											
+											if(dataCountyName == trumpCountyName){
+												json.features[j].properties.tPercent = stringPercentToNum(tDataCountyPercent);
+											}
+
+											// Stop looking through the JSON
+											break;
+										}
+									}
+								}
+								console.log("High: " + high + " low: " + low);
+								// update color fns with new low and high vals
+								blueRed = d3.scale.linear()
+										.domain([low, 50, high])
+										// .domain([0, 50, 100])
+										.range(['#cc0a0a', '#ffffff', '#0074d3'])
+										.interpolate(d3.interpolateRgb);
+								trumpPercent = d3.scale.linear()
+										.domain([low, high])
+										.range(['#ffffff', '#000000'])
+										.interpolate(d3.interpolateRgb);
+							
+								if(curColorFn == 0){
+									updateCali.draw({
+										// geodata: "california-counties.json",
+										data: json.features,
+										colorFunction: blueRed
+									});
+								}
+								else if(curColorFn == 1){
+									updateCali.draw({
+										// geodata: "california-counties.json",
+										data: json.features,
+										colorFunction: trumpPercent
+									});
+								}
+								else if(curColorFn == 2){
+									updateCali.draw({
+										// geodata: "california-counties.json",
+										data: json.features,
+										colorFunction: trumpYesNo
+									});
+								}
+								else{
+									updateCali.draw({
+										// geodata: "california-counties.json",
+										data: json.features,
+										colorFunction: blueRed
+									});
+								}
+							});
+						});
+					});
+			}
+			$('input[name=show-trump]').change(function(){
+				if(!onlyTCounties) onlyTCounties = true;
+				else onlyTCounties = false;
+
+				console.log("only: " + onlyTCounties);
+				draw(currentDataset, currentColorFn);
+			});
+
+			// change datasets using jquery and radio buttons
+			$('input[name=opt]').change(function(){
+				var value = $( 'input[name=opt]:checked' ).val();
+				if(value == "1"){
+					currentDataset = "prop-51-2016.csv";
+					currentColorFn = 0;
+				}
+				else if(value == "2"){
+					currentDataset = "prop-30-2012.csv";
+					currentColorFn = 0;
+				}
+				else if(value == "3"){
+					currentDataset = "prop-1D-2006.csv";
+					currentColorFn = 0;
+				}
+				else if(value == "4"){
+					currentDataset = "ca-county-trump-percent-votes-2016.csv";
+					currentColorFn = 1;
+				}
+				else if(value == "5"){
+					currentDataset = "trump-majority-vote-2016.csv";
+					currentColorFn = 2;
+				}
+
+				// load the current dataset and draw it
+				console.log("drew with " + currentDataset);
+				// loading csv vals into json code based on code in http://bl.ocks.org/michellechandra/0b2ce4923dc9b5809922
+				draw(currentDataset, currentColorFn);
+			});
+
+			// converts a number with a % as a string to a double
+			function stringPercentToNum(percent){
+				let result = "";
+				for(var i = 0; i < percent.length; i++){
+					if(percent.charAt(i) != '%') result += percent.charAt(i);
+				}
+				// console.log("percent: " + result);
+
+				return parseFloat(result);
+			}
+
+
+			//width and height
+			var w = 760;
+			var h = 600;
+
+			
+
+			//define map projection
+			var projection = d3.geo.mercator()
+								   .center([ -120, 37 ])
+								   .translate([ w/2, h/2 ])
+								   .scale([ w*3.3 ]);
+
+			// path generator
+			var path = d3.geo.path()
+							 .projection(projection);
+
+			// create SVG
+			var svg = d3.select("#container")
+						.append("svg")
+						.attr("width", w)
+						.attr("height", h);
+
+			// page width function from https://stackoverflow.com/questions/1038727/how-to-get-browser-width-using-javascript-code
+			function getWidth() {
+				return Math.max(
+					document.body.scrollWidth,
+					document.documentElement.scrollWidth,
+					document.body.offsetWidth,
+					document.documentElement.offsetWidth,
+					document.documentElement.clientWidth
+				);
+			}
+
+			// draws the map using d3 functions
+			var updateCali = {
+				draw(config){
+					// geodata = config.geodata;
+					resultData = config.data;
+					colorFn = config.colorFunction;
+					console.log("test");
+					console.log(resultData);
+
+					var newPath = svg.selectAll("path").data(resultData);
+
+					newPath.enter().append("path").attr("d", path).attr("id", function(d){ return d.properties.name});
+
+					newPath.transition()
+						.duration(1250)
+						// .style("fill",function(d){ return colorFn.getColor({data: config.data}); });
+						.style("fill",function(d){ return colorFn(d.properties.percent); });
+
+					newPath.each(function(d, i) {
+						if(onlyTCounties){
+							console.log("d.properties " + d.properties.tPercent);
+							if(d.properties.tPercent == 0){
+								d3.select(this).transition().duration(0).style("fill", "white");
+							}
+							else{
+								d3.select(this).style("stroke", "gray");
+							}
+						}
+						else if(currentDataset == "ca-county-trump-percent-votes-2016.csv"){
+							d3.select(this).style("stroke", "gray");
+						}
+						else{
+							d3.select(this).style("stroke", "white");
+						}
+					});
+
+
+
+		
+					
+					// when moused over, displays county info in tooltip
+					// also increases stroke size for trump counties if 
+					// only drawing trump counties 
+					newPath.on("mouseover", function(d){
+								// if(onlyTCounties && d.properties.tPercent == 100)
+								// 	d3.select(this).style("stroke", "#e5e5e5").style("stroke-width", "4");
+								// else{
+								// 	d3.select(this).style("stroke", "#ffffff").style("stroke-width", "1");
+								// }
+									var halfWidth = getWidth()/2;
+									var xPosition = halfWidth;
+									var yPosition = h/2 + 350;
+									console.log()
+			// 						var xPosition = parseFloat(path.centroid(this).attr("cx"));
+			// 						var yPosition = parseFloat(path.centroid(this).attr("cy"));
+									d3.select("#tooltip")
+									// .style("position", "absolute")
+									.style("left", xPosition + "px")
+									.style("top", yPosition + "px");
+									d3.select("#county")
+									.text(d.properties.name);
+									d3.select("#vote")
+									.text(d.properties.percent);
+									d3.select("#tooltip")
+									.classed("hidden", false);
+									})
+									.on("mouseout", function(d){
+										d3.select("#tooltip").classed("hidden", true);
+									});
+
+					newPath.exit().remove();
+				}
+			}
+			
+			// draw the map first using 2016 prop values
+			draw(currentDataset, currentColorFn);
+		</script>
+	</body>
+</html>
