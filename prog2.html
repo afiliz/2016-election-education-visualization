@@ -165,8 +165,6 @@
 					<br>
 				</p>
 				<p>Note: A "Trump County" is a California county whose majority population voted for Donald Trump.</p>
-<br>
-				<p>Code documentation is included in prog2.html and group-bar.js.</p>
 			</div>
 			<div class="row">
 				<div id="container" class="col">
@@ -175,18 +173,22 @@
 				</div>
 				<div id="map-select" class="col">
 					<div id="selections">
+						<p><b>Proposition Voting Results</p></b>
 						<label><input type="radio" name="opt" value="1" name="my-radio" checked> Prop 51, 2016</label><br>
 						<label><input type="radio" name="opt" value="2" name="my-radio"> Prop 30, 2012</label><br>
 						<label><input type="radio" name="opt" value="3" name="my-radio"> Prop 1D, 2006</label><br>
 						<br>
+
+						<p><b>2016 Presidential Election Voting Results</p></b>
 						<label><input type="radio" name="opt" value="4" name="my-radio"> Trump Vote Percentage Per County</label><br>
 						<label><input type="radio" name="opt" value="5" name="my-radio"> Majority Vote (Red = Trump)</label><br>
 						<br>
 						<input type="checkbox" name="show-trump"> Show only Trump counties*<br>
+						<br>
 					</div>
 				</div>
 			</div>
-			<div class="row" id="map-info">
+			<div class="row-fluid" id="map-info">
 					<h1>County Map</h2>
 						<p>
 			
@@ -198,33 +200,31 @@
 							County Map Colors
 						</h1>
 						<p>
-								The data bounds are as follows:
-								<br>Prop 51: 31% (Modoc) to 66.8% (San Francisco)
-								<br>Prop 30: 30.6% (Modoc) to 77.2% (San Francisco)
-								<br>Prop 1D: 37.9% (Glenn) to 72.9% (San Francisco)
-								<br>Trump Vote Percentage Per County: 9.3% (San Francisco) to 72% (Lassen)
-								<br><br>
-								The colors represent the following:
-								<br><br>
-								Propositions (all of which voting "yes" on): 
-								<br>Red: Smallest Percentage Val
-								<br>White: 50%
-								<br>Blue: Highest Percentage Val
-								<br><br>
-								Trump Vote Percentage Per County: 
-								<br>Black: Highest Percentage Val
-								<br> Light Grey: Lowest Percentage Val
-								<br><br>
-								Trump Vote Percentage Per County: 
-								<br>Red: County Voted Trump
-								<br> White: County Voted Clinton
-								<br><br>
-								Note: Other groups other than Trump and Clinton were involved in the vote percentage. However, since Clinton's vote percentages across all counties beat the other candidates' vote percentages combined, the visualization here represents Trump vs Clinton.
-								<br><br><br>
-							For all datasets used in the county map, the darkest sections of the county map represent the value bounds for that dataset.
+							<b>The data bounds are as follows:</b>
+							<br>Prop 51: 31% (Modoc) to 66.8% (San Francisco)
+							<br>Prop 30: 30.6% (Modoc) to 77.2% (San Francisco)
+							<br>Prop 1D: 37.9% (Glenn) to 72.9% (San Francisco)
+							<br>Trump Vote Percentage Per County: 9.3% (San Francisco) to 72% (Lassen)
 							<br><br>
-							For example, for Prop 51, the highest percent value was 66.8% and the lowest was 31.5%. So the darkest shade of blue represents 66.8% and the darkest shade of red represents 31.5%.
-							
+							<em>The colors represent the following:</em>
+							<br><br>
+							<b>Propositions (all of which voting "yes" on):</b>
+							<br>Red: Smallest Percentage Val
+							<br>White: 50%
+							<br>Blue: Highest Percentage Val
+							<br><br>
+							<b>Trump Vote Percentage Per County:</b>
+							<br>Black: Highest Percentage Val
+							<br> Light Grey: Lowest Percentage Val
+							<br><br>
+							<b>Trump Vote Percentage Per County:</b>
+							<br>Red: County Voted Trump
+							<br> White: County Voted Clinton
+							<br><br>
+							<b>Things to note:</b> 
+							<br>• Other groups other than Trump and Clinton were involved in the vote percentage. However, since Clinton's vote percentages across all counties beat the other candidates' vote percentages combined, the visualization here represents Trump vs Clinton.
+							<br>• For all datasets used in the county map, the darkest sections of the county map represent the value bounds for that dataset.
+							<br>	• For example, for Prop 51, the highest percent value was 66.8% and the lowest was 31.5%. So the darkest shade of blue represents 66.8% and the darkest shade of red represents 31.5%.
 						</p>
 			</div>
 			
